@@ -10,6 +10,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -84,6 +86,12 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(8.dp))
 
             AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f),
+                //modifier = Modifier
+                //    .width(640.dp)
+                //    .height(360.dp),
                 factory = { context ->
                     SurfaceView(context).apply {
                         holder.addCallback(object : SurfaceHolder.Callback {
@@ -106,7 +114,8 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                             }
                         })
                     }
-                })
+                }
+            )
         }
     }
 }
