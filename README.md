@@ -7,8 +7,8 @@ h.264 MediaCodec HW decoder delay average = 12ms on Pixel 6
 
 Frame delay 250ms to 350ms on Pixel 6
 
-![alt text](images/frame1.png)
-![alt text](images/frame2.png)
-![alt text](images/frame3.png)
+![alt text](images/frame1.jpg)
+![alt text](images/frame2.jpg)
+![alt text](images/frame3.jpg)
 
 ![alt text](images/AndRTSP.png)
