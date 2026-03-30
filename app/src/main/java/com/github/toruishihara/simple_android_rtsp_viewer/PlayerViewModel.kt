@@ -8,6 +8,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.toruishihara.simple_android_rtsp_viewer.extensions.toHexString
+import com.github.toruishihara.simple_android_rtsp_viewer.onvif.OnvifConfig
+import com.github.toruishihara.simple_android_rtsp_viewer.onvif.OnvifPtzClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlayerViewModel : ViewModel() {
@@ -138,6 +141,103 @@ class PlayerViewModel : ViewModel() {
         releaseDecoder()
         rtspSurface = null
         h264Receiver?.release()
+    }
+
+    // ONVIF
+    private var onvif: OnvifPtzClient? = null
+
+    fun onvifUp() {
+        if (onvif == null) {
+            initOnvif()
+        }
+        moveUp()
+    }
+    fun onvifDown() {
+        if (onvif == null) {
+            initOnvif()
+        }
+        moveDown()
+    }
+    fun onvifLeft() {
+        if (onvif == null) {
+            initOnvif()
+        }
+        moveLeft()
+    }
+    fun onvifRight() {
+        if (onvif == null) {
+            initOnvif()
+        }
+        moveRight()
+    }
+
+    fun initOnvif() {
+        val uri = java.net.URI(rtspUrl)
+
+        val userInfo = uri.userInfo // "long:short"
+        val ip = uri.host         // "192.168.0.120"
+        val port = 8899
+
+        val (user, pass) = userInfo.split(":")
+
+        onvif = OnvifPtzClient(
+            OnvifConfig(
+                deviceServiceUrl = "http://$ip:$port/onvif/device_service",
+                username = user,
+                password = pass,
+                profileToken = "Profile_token1"
+            )
+        )
+    }
+
+    fun moveRight() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                onvif?.continuousMove(pan = 0.5f, tilt = 0f, zoom = 0f)
+            } catch (e: Exception) {
+                Log.e("CameraVM", "moveRight failed", e)
+            }
+        }
+    }
+
+    fun moveLeft() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                onvif?.continuousMove(pan = -0.5f, tilt = 0f, zoom = 0f)
+            } catch (e: Exception) {
+                Log.e("CameraVM", "moveLeft failed", e)
+            }
+        }
+    }
+
+    fun moveUp() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                onvif?.continuousMove(pan = 0f, tilt = 0.5f, zoom = 0f)
+            } catch (e: Exception) {
+                Log.e("CameraVM", "moveUp failed", e)
+            }
+        }
+    }
+
+    fun moveDown() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                onvif?.continuousMove(pan = 0f, tilt = -0.5f, zoom = 0f)
+            } catch (e: Exception) {
+                Log.e("CameraVM", "moveDown failed", e)
+            }
+        }
+    }
+
+    fun stopMove() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                onvif?.stop()
+            } catch (e: Exception) {
+                Log.e("CameraVM", "stopMove failed", e)
+            }
+        }
     }
 }
 

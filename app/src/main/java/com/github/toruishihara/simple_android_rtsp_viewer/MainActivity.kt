@@ -82,6 +82,32 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                     Text("Stop")
                 }
             }
+            Row {
+                Button(onClick = {
+                    playerViewModel.onvifUp()
+                }) {
+                    Text("ONVIF UP")
+                }
+            }
+            Row {
+                Button(onClick = {
+                    playerViewModel.onvifLeft()
+                }) {
+                    Text("ONVIF LEFT")
+                }
+                Button(onClick = {
+                    playerViewModel.onvifRight()
+                }) {
+                    Text("ONVIF RIGHT")
+                }
+            }
+            Row {
+                Button(onClick = {
+                    playerViewModel.onvifDown()
+                }) {
+                    Text("ONVIF Down")
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 

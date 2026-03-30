@@ -49,7 +49,6 @@ class H264Decoder(
         val c = MediaCodec.createDecoderByType(MIME_TYPE)
         c.setCallback(object : MediaCodec.Callback() {
             override fun onInputBufferAvailable(codec: MediaCodec, index: Int) {
-                Log.d(TAG, "onInputBufferAvailable index=${index} calling trySend")
                 inputIndexChannel?.trySend(index)
             }
 
@@ -96,8 +95,8 @@ class H264Decoder(
         isCodecConfig: Boolean = false,
         isEndOfStream: Boolean = false
     ) {
-        Log.d(TAG, "h264 decode len=${nal.size}")
-        Log.d(TAG, nal.toHexString(32))
+        //Log.d(TAG, "h264 decode len=${nal.size}")
+        //Log.d(TAG, nal.toHexString(32))
 
         if (!started.get()) {
             Log.w(TAG, "decoder not started")
@@ -110,13 +109,11 @@ class H264Decoder(
         }
 
         val inputIndex = try {
-            Log.d(TAG, "ch.receive ch=${ch}")
             ch.receive()
         } catch (e: Exception) {
             Log.w(TAG, "receive failed: ${e.message}")
             return
         }
-        Log.d(TAG, "ch.receive done")
 
         val c = codec ?: run {
             Log.w(TAG, "codec null after receive")
@@ -128,7 +125,6 @@ class H264Decoder(
             return
         }
 
-        Log.d(TAG, "inputIndex=${inputIndex}")
         val inputBuffer = try {
             c.getInputBuffer(inputIndex)
         } catch (e: IllegalStateException) {
@@ -139,11 +135,9 @@ class H264Decoder(
             return
         }
 
-        Log.d(TAG, "inputBuffer.clear")
         inputBuffer.clear()
-        Log.d(TAG, "inputBuffer.put")
         inputBuffer.put(nal)
-        Log.d(TAG, "inputBuffer.put end")
+        //Log.d(TAG, "inputBuffer.put end")
 
         var flags = 0
         if (isCodecConfig) {

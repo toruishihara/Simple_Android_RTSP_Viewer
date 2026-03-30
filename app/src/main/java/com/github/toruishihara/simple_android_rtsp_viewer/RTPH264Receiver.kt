@@ -240,7 +240,7 @@ class RTPH264Receiver(
             return
         }
 
-        Log.d(TAG, "IDR with FU-A")
+        //Log.d(TAG, "IDR with FU-A")
 
         val fuHeader = payload[1].toInt() and 0xFF
         val startFlag = (fuHeader and 0x80) != 0
@@ -251,10 +251,10 @@ class RTPH264Receiver(
         val nri = nal0 and 0x60
         val reconstructedNalHeader = f or nri or originalType
 
-        Log.d(TAG,
-            "fuHeader=%02X reconstructedNALHeader=%02X"
-                .format(fuHeader, reconstructedNalHeader)
-        )
+        //Log.d(TAG,
+        //    "fuHeader=%02X reconstructedNALHeader=%02X"
+        //        .format(fuHeader, reconstructedNalHeader)
+        //)
 
         val fragmentData = payload.copyOfRange(2, payload.size)
 
