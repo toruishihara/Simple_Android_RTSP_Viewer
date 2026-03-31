@@ -12,7 +12,7 @@ Call Google MediaPipe hand landmarker.
 
 | Screenshot 1 | Screenshot 2 |
 | :---: | :---: |
-| ![Alt 1](images/hand_detect1.png) | ![Alt 2](images/frame1.png) |
+| ![Alt 1](images/hand_detect1.jpg) | ![Alt 2](images/frame1.jpg) |
 | With Pipeline | Frame delay measurement |
 
 
