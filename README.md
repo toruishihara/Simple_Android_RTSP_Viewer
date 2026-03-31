@@ -9,10 +9,10 @@ Frame delay 250ms to 350ms on Pixel 6
 
 Call Google MediaPipe hand landmarker.
 
-![alt text](images/hand_detect1.jpg)
+![alt text](images/hand_detect1.jpg){width=50% height=50%}
 
-![alt text](images/frame1.jpg)
-![alt text](images/frame2.jpg)
-![alt text](images/frame3.jpg)
+![alt text](images/frame1.jpg){width=50% height=50%}
+![alt text](images/frame2.jpg){width=50% height=50%}
+![alt text](images/frame3.jpg){width=50% height=50%}
 
-![alt text](images/AndRTSP.png)
+![alt text](images/AndRTSP.png){width=50% height=50%}
