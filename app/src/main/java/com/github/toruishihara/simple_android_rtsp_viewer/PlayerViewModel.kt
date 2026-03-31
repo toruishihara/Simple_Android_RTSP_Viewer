@@ -1,23 +1,36 @@
 package com.github.toruishihara.simple_android_rtsp_viewer
 
+import android.app.Application
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.toruishihara.simple_android_rtsp_viewer.extensions.toHexString
 import com.github.toruishihara.simple_android_rtsp_viewer.onvif.OnvifConfig
 import com.github.toruishihara.simple_android_rtsp_viewer.onvif.OnvifPtzClient
+import com.github.toruishihara.simple_android_rtsp_viewer.pipeline.HandLandmarkerHelper
+import com.google.mediapipe.tasks.vision.core.RunningMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val TAG = "TNIVM"
         const val RTPPort = 51500
     }
+    private val handLandmarkerHelper by lazy {
+        HandLandmarkerHelper(
+            context = getApplication(),
+            runningMode = RunningMode.IMAGE,
+        )
+    }
+
     private var rtspClient: RTSPClient? = null
     private var h264Receiver: RTPH264Receiver? = null
     private var h264Decoder: H264Decoder? = null
@@ -34,6 +47,12 @@ class PlayerViewModel : ViewModel() {
         private set
 
     var statusText by mutableStateOf("Idle")
+        private set
+
+    var capturedBitmap by mutableStateOf<Bitmap?>(null)
+        private set
+
+    var detectionResult by mutableStateOf<HandLandmarkerHelper.ResultBundle?>(null)
         private set
 
     fun onUrlChange(newUrl: String) {
@@ -236,6 +255,37 @@ class PlayerViewModel : ViewModel() {
                 onvif?.stop()
             } catch (e: Exception) {
                 Log.e("CameraVM", "stopMove failed", e)
+            }
+        }
+    }
+
+    fun detectHand(bitmap: Bitmap) {
+        // 1. Update the background image instantly on the main thread
+        capturedBitmap = bitmap
+        
+        viewModelScope.launch(Dispatchers.Default) {
+            // 2. Perform the heavy detection math in the background
+            val result = handLandmarkerHelper.detectImage(bitmap)
+            
+            // Detailed LOGS for debugging
+            if (result != null) {
+                val handLandmarks = result.results.firstOrNull()?.landmarks()
+                if (!handLandmarks.isNullOrEmpty()) {
+                    Log.d(TAG, "DetectHand: Found ${handLandmarks.size} hand(s)")
+                    handLandmarks.forEachIndexed { index, landmarks ->
+                        val wrist = landmarks.getOrNull(0)
+                        Log.d(TAG, "Hand #$index: ${landmarks.size} landmarks. Wrist at x=${wrist?.x()}, y=${wrist?.y()}")
+                    }
+                } else {
+                    Log.d(TAG, "DetectHand: No hands found in image")
+                }
+            } else {
+                Log.e(TAG, "DetectHand: result is NULL")
+            }
+            
+            withContext(Dispatchers.Main) {
+                // 3. Update the landmarks once they are ready
+                detectionResult = result
             }
         }
     }

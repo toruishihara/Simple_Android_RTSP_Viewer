@@ -205,8 +205,7 @@ class RTPH264Receiver(
         val nal0 = payload[0].toInt() and 0xFF
         val nalType = nal0 and 0x1F
 
-        Log.d(TAG, "payload[0]=%02X nalType=%02X %d".format(nal0, nalType, nalType))
-
+        //Log.d(TAG, "payload[0]=%02X nalType=%02X %d".format(nal0, nalType, nalType))
         if (nalType != 28) {
             // Not FU-A
             when (nalType) {
