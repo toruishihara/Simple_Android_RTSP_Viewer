@@ -1,5 +1,6 @@
 # Simple_Android_RTSP_Viewer
-Simple Android RTSP Viewer with MediaCodec, no FFMPEG or VLC
+Android RTSP Viewer with MediaCodec, no FFMPEG or VLC.
+Implemented real-time hand detection using Google MediaPipe Hand Landmarker on Android, processing live video frames from camera/RTSP streams and extracting hand landmarks for gesture-based interaction.
 
 RTSP server : Jennov model HS4007, SD mode 640x360
 

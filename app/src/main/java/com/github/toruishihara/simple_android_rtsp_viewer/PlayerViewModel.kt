@@ -271,10 +271,24 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             if (result != null) {
                 val handLandmarks = result.results.firstOrNull()?.landmarks()
                 if (!handLandmarks.isNullOrEmpty()) {
-                    Log.d(TAG, "DetectHand: Found ${handLandmarks.size} hand(s)")
-                    handLandmarks.forEachIndexed { index, landmarks ->
-                        val wrist = landmarks.getOrNull(0)
-                        Log.d(TAG, "Hand #$index: ${landmarks.size} landmarks. Wrist at x=${wrist?.x()}, y=${wrist?.y()}")
+                    val landmarks = handLandmarks[0] // First detected hand
+                    val wrist = landmarks[0]
+                    val indexTip = landmarks[8]
+
+                    // Calculate vector from Wrist to Index Tip
+                    val dx = indexTip.x() - wrist.x()
+                    val dy = indexTip.y() - wrist.y()
+                    val distance = Math.sqrt((dx * dx + dy * dy).toDouble())
+
+                    Log.d(TAG, "DetectHand: Found Hand. Vector Wrist->IndexTip: dx=${"%.3f".format(dx)}, dy=${"%.3f".format(dy)}, dist=${"%.3f".format(distance)}")
+                    
+                    if (distance > 0.2) { // Example threshold to detect a "pointing" hand
+                        when {
+                            dx > 0.15f -> statusText = "GESTURE: Pointing RIGHT"
+                            dx < -0.15f -> statusText = "GESTURE: Pointing LEFT"
+                            dy < -0.15f -> statusText = "GESTURE: Pointing UP"
+                            dy > 0.15f -> statusText = "GESTURE: Pointing DOWN"
+                        }
                     }
                 } else {
                     Log.d(TAG, "DetectHand: No hands found in image")

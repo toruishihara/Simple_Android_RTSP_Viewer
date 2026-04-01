@@ -14,6 +14,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -73,6 +75,10 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
+            Text(
+                text = "Status: ${playerViewModel.statusText}",
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
 
             TextField(
                 value = playerViewModel.rtspUrl,
@@ -86,7 +92,7 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 Button(onClick = {
                     playerViewModel.start()
                 }) {
-                    Text("Start")
+                    Text("RTSP Start")
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -94,7 +100,7 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 Button(onClick = {
                     playerViewModel.stop()
                 }) {
-                    Text("Stop")
+                    Text("RTSP Stop")
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -111,30 +117,56 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                     Text("Detect Hand")
                 }
             }
-            Row {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Spacer(modifier = Modifier.width(40.dp))
+                Text("ONVIF")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Spacer(modifier = Modifier.width(40.dp))
                 Button(onClick = {
                     playerViewModel.onvifUp()
                 }) {
-                    Text("ONVIF UP")
+                    Text("UP")
                 }
             }
-            Row {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 Button(onClick = {
                     playerViewModel.onvifLeft()
                 }) {
-                    Text("ONVIF LEFT")
+                    Text("LEFT")
                 }
                 Button(onClick = {
                     playerViewModel.onvifRight()
                 }) {
-                    Text("ONVIF RIGHT")
+                    Text("RIGHT")
                 }
             }
-            Row {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Spacer(modifier = Modifier.width(40.dp))
                 Button(onClick = {
                     playerViewModel.onvifDown()
                 }) {
-                    Text("ONVIF Down")
+                    Text("Down")
                 }
             }
 
