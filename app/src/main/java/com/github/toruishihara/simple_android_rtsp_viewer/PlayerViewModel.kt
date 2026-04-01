@@ -42,6 +42,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     var rtspUrl by mutableStateOf("rtsp://long:short@192.168.0.120:554/live/ch1")
+    var onvifPort by mutableStateOf("8899")
 
     var isPlaying by mutableStateOf(false)
         private set
@@ -195,7 +196,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
         val userInfo = uri.userInfo // "long:short"
         val ip = uri.host         // "192.168.0.120"
-        val port = 8899
+        val port = onvifPort.toInt()
 
         val (user, pass) = userInfo.split(":")
 

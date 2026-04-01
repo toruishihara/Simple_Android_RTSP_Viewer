@@ -28,8 +28,8 @@ class RTSPClient(
 
     private val rtcpPort: Int = rtpPort + 1
 
-    private val rtspURLNoCreds: String
-        get() = "rtsp://$host:$port$path"
+    //private val rtspURLNoCreds: String
+    //    get() = "rtsp://$host:$port$path"
 
     var state: State = State.IDLE
         private set

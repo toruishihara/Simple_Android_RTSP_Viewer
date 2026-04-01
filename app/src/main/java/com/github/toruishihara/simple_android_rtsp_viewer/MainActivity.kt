@@ -86,8 +86,15 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 label = { Text("RTSP URL") }
             )
 
+            TextField(
+                value = playerViewModel.onvifPort,
+                onValueChange = { playerViewModel.onvifPort = it },
+                label = { Text("ONVIF Port") }
+            )
+
             Spacer(modifier = Modifier.height(8.dp))
 
+            // RTSP Playback Controls
             Row {
                 Button(onClick = {
                     playerViewModel.start()
@@ -114,64 +121,61 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                         }
                     }, Handler(Looper.getMainLooper()))
                 }) {
-                    Text("Detect Hand")
+                    Text("Detect")
                 }
             }
-            Row(
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // ONVIF D-Pad Controller Layout
+            Text(
+                text = "Camera Control (ONVIF)",
+                color = Color.Gray,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
+                    .fillMaxWidth(0.5f)
+                    .height(160.dp)
+                    .background(Color.LightGray.copy(alpha = 0.2f))
                     .align(Alignment.CenterHorizontally)
             ) {
-                Spacer(modifier = Modifier.width(40.dp))
-                Text("ONVIF")
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Spacer(modifier = Modifier.width(40.dp))
-                Button(onClick = {
-                    playerViewModel.onvifUp()
-                }) {
+                // UP
+                Button(
+                    onClick = { playerViewModel.onvifUp() },
+                    modifier = Modifier.align(Alignment.TopCenter)
+                ) {
                     Text("UP")
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Button(onClick = {
-                    playerViewModel.onvifLeft()
-                }) {
+
+                // LEFT
+                Button(
+                    onClick = { playerViewModel.onvifLeft() },
+                    modifier = Modifier.align(Alignment.CenterStart)
+                ) {
                     Text("LEFT")
                 }
-                Button(onClick = {
-                    playerViewModel.onvifRight()
-                }) {
+
+                // RIGHT
+                Button(
+                    onClick = { playerViewModel.onvifRight() },
+                    modifier = Modifier.align(Alignment.CenterEnd)
+                ) {
                     Text("RIGHT")
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.LightGray)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Spacer(modifier = Modifier.width(40.dp))
-                Button(onClick = {
-                    playerViewModel.onvifDown()
-                }) {
-                    Text("Down")
+
+                // DOWN
+                Button(
+                    onClick = { playerViewModel.onvifDown() },
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                ) {
+                    Text("DOWN")
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // Live Video Feed
             AndroidView(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -202,9 +206,11 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // Detection Result Preview
             playerViewModel.capturedBitmap?.let { bitmap ->
+                Text("Last Detection Frame:", color = Color.Gray)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -234,8 +240,6 @@ fun HandLandmarkOverlay(
         val width = size.width
         val height = size.height
 
-        val TAG = "Canvas"
-        Log.d(TAG, "resultBundle.result=${resultBundle?.results}")
         resultBundle?.results?.firstOrNull()?.landmarks()?.forEach { landmarks ->
             // Draw connections
             val connections = listOf(
