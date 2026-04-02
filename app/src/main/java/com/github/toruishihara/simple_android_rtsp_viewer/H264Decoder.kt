@@ -57,7 +57,7 @@ class H264Decoder(
                 index: Int,
                 info: MediaCodec.BufferInfo
             ) {
-                Log.d(TAG, "OUTPUT index=$index size=${info.size} pts=${info.presentationTimeUs}")
+                Log.d(TAG, "DECODE_END ts=${info.presentationTimeUs}")
                 try {
                     // Render to Surface if buffer has content
                     val render = info.size > 0
@@ -147,7 +147,7 @@ class H264Decoder(
             flags = flags or MediaCodec.BUFFER_FLAG_END_OF_STREAM
         }
 
-        Log.d(TAG, "queueInputBuffer size=${nal.size} ts=${ptsUs}")
+        Log.d(TAG, "DECODE_START ts=${ptsUs} size=${nal.size}")
         c.queueInputBuffer(
             inputIndex,
             0,

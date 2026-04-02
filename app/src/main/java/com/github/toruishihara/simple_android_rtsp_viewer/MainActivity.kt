@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +63,19 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
     var surface by remember { mutableStateOf<Surface?>(null) }
     var surfaceView by remember { mutableStateOf<SurfaceView?>(null) }
 
+    // Observe captureRequestTrigger for automatic 5-second detection
+    LaunchedEffect(playerViewModel.captureRequestTrigger) {
+        if (playerViewModel.captureRequestTrigger > 0) {
+            val view = surfaceView ?: return@LaunchedEffect
+            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            PixelCopy.request(view, bitmap, { result ->
+                if (result == PixelCopy.SUCCESS) {
+                    playerViewModel.detect(bitmap)
+                }
+            }, Handler(Looper.getMainLooper()))
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -75,8 +89,12 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                 .padding(padding)
                 .padding(16.dp)
         ) {
+            val mins = playerViewModel.timerSeconds / 60
+            val secs = playerViewModel.timerSeconds % 60
+            val formattedTime = "%02d:%02d".format(mins, secs)
+
             Text(
-                text = "Status: ${playerViewModel.statusText}",
+                text = "Time: $formattedTime | Status: ${playerViewModel.statusText}",
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -117,7 +135,7 @@ fun RtspScreen(playerViewModel: PlayerViewModel = viewModel()) {
                     val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
                     PixelCopy.request(view, bitmap, { result ->
                         if (result == PixelCopy.SUCCESS) {
-                            playerViewModel.detectHand(bitmap)
+                            playerViewModel.detect(bitmap)
                         }
                     }, Handler(Looper.getMainLooper()))
                 }) {

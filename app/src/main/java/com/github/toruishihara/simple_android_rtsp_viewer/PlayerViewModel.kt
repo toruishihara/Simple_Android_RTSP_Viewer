@@ -16,6 +16,8 @@ import com.github.toruishihara.simple_android_rtsp_viewer.onvif.OnvifPtzClient
 import com.github.toruishihara.simple_android_rtsp_viewer.pipeline.HandLandmarkerHelper
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -56,6 +58,34 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     var detectionResult by mutableStateOf<HandLandmarkerHelper.ResultBundle?>(null)
         private set
 
+    var timerSeconds by mutableStateOf(0)
+        private set
+
+    var captureRequestTrigger by mutableStateOf(0)
+        private set
+
+    private var timerJob: Job? = null
+
+    fun startTimer() {
+        timerJob?.cancel()
+        timerSeconds = 0
+        captureRequestTrigger = 0
+        timerJob = viewModelScope.launch {
+            while (true) {
+                delay(1000)
+                timerSeconds++
+                if (timerSeconds % 5 == 0) {
+                    captureRequestTrigger++
+                }
+            }
+        }
+    }
+
+    fun stopTimer() {
+        timerJob?.cancel()
+        timerJob = null
+    }
+
     fun onUrlChange(newUrl: String) {
         rtspUrl = newUrl
     }
@@ -63,6 +93,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     @OptIn(ExperimentalStdlibApi::class)
     fun start() {
         isPlaying = true
+        startTimer()
         viewModelScope.launch {
             if (rtspClient == null) {
                 rtspClient = RTSPClient(rtspUrl, RTPPort)
@@ -87,6 +118,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
 
     fun stop() {
         isPlaying = false
+        stopTimer()
     }
 
     fun startRtpReceiver(port: Int) {
@@ -260,7 +292,12 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun detectHand(bitmap: Bitmap) {
+    fun detect(bitmap: Bitmap) {
+        detectHand(bitmap)
+        // Add more detection functions here later if needed
+    }
+
+    private fun detectHand(bitmap: Bitmap) {
         // 1. Update the background image instantly on the main thread
         capturedBitmap = bitmap
         
