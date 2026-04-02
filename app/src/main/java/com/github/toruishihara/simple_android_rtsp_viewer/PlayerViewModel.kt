@@ -322,10 +322,22 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
                     
                     if (distance > 0.2) { // Example threshold to detect a "pointing" hand
                         when {
-                            dx > 0.15f -> statusText = "GESTURE: Pointing RIGHT"
-                            dx < -0.15f -> statusText = "GESTURE: Pointing LEFT"
-                            dy < -0.15f -> statusText = "GESTURE: Pointing UP"
-                            dy > 0.15f -> statusText = "GESTURE: Pointing DOWN"
+                            dx > 0.15f -> {
+                                statusText = "GESTURE: Pointing RIGHT"
+                                onvifRight()
+                            }
+                            dx < -0.15f -> {
+                                statusText = "GESTURE: Pointing LEFT"
+                                onvifLeft()
+                            }
+                            dy < -0.15f -> {
+                                statusText = "GESTURE: Pointing DOWN"
+                                onvifDown()
+                            }
+                            dy > 0.15f -> {
+                                statusText = "GESTURE: Pointing UP"
+                                onvifUp()
+                            }
                         }
                     }
                 } else {
